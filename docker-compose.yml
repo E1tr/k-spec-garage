@@ -6,22 +6,33 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - MONGO_URI=mongodb://mongo:27017/kspec_garage
+      - MONGO_URI=mongodb://172.28.0.2:27017/kspec_garage
       - JWT_SECRET=kspec_super_secreto_2026
     volumes:
       - ./frontend:/app/frontend
     depends_on:
       - mongo
+    networks:
+      kspec-net:
+        ipv4_address: 172.28.0.3
     restart: unless-stopped
 
   mongo:
     image: mongo:7
     container_name: kspec-mongo
-    ports:
-      - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      kspec-net:
+        ipv4_address: 172.28.0.2
     restart: unless-stopped
 
 volumes:
   mongo_data:
+
+networks:
+  kspec-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
